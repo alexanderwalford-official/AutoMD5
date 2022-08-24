@@ -44,7 +44,55 @@ namespace AutoMD5
                         string s1 = f.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
                         string[] s1s = s.Split('|'); // split each propery into it an array
 
-                        filelist.Items.Add(s1s[2].Replace("f:", "")); // add file name
+                        string s1_url = s1s[2].Replace("f:", "");
+                        string url;
+
+                        if (s1_url.StartsWith("s"))
+                        {
+                            // ssl mode
+                            s1_url = s1_url.Remove(0, 1); // remove s so we can add it back to the correct part
+                            url = s1_url = "https:" + s1_url;
+                        }
+                        else
+                        {
+                            url = s1_url = "http:" + s1_url;
+                        }
+
+                        string url_final = url.Replace("{fs}", "/");
+                        string[] urlsplittitle = url_final.Split('/');
+
+                        // replace %20 with space
+
+
+                        var gridView = new GridView();
+                        this.filelist.View = gridView;
+                        gridView.Columns.Add(new GridViewColumn
+                        {
+                            Header = "Latest?",
+                            DisplayMemberBinding = new Binding("IsUpdated")
+                        });
+                        gridView.Columns.Add(new GridViewColumn
+                        {
+                            Header = "File Name",
+                            DisplayMemberBinding = new Binding("filename")
+                        });
+                        gridView.Columns.Add(new GridViewColumn
+                        {
+                            Header = "Raw ID",
+                            DisplayMemberBinding = new Binding("id")
+                        });
+
+                        // Populate list
+                       
+                        if (url_final.Contains("%20"))
+                        {
+                            filelist.Items.Add(new ListItem { IsUpdated = "⚠️", id = s1s[2], filename = urlsplittitle[urlsplittitle.Length - 1].Replace("%20", " ") });
+                        }
+                        else
+                        {
+                            filelist.Items.Add(new ListItem { IsUpdated = "⚠️", id = s1s[2], filename = urlsplittitle[urlsplittitle.Length - 1] });
+                        }
+                        
                     }
 
                 }
@@ -219,7 +267,7 @@ namespace AutoMD5
             try
             {
                 // menu item clicked
-                o = filelist.SelectedItem;
+                o = filelist.SelectedIndex;
 
                 if (o != null)
                 {
