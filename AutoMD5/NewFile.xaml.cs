@@ -36,7 +36,7 @@ namespace AutoMD5
             {
                 // add an exclusive link paramter for rechecking?
 
-                string filename = linkinputbox.Text.Replace("/", "_fs_").Replace("http", "").Replace(":", ""); // clean the string
+                string filename = linkinputbox.Text.Replace("/", "{fs}").Replace("http", "").Replace(":", ""); // clean the string
                 // first, we need to add the record to the files list file
                 File.WriteAllText(datafile, File.ReadAllText(datafile) + "\n[m:" + md5previewtext.Content + "|i:" + newinstructorfile + "|f:" + filename + "|auto_download:" + AutoUpdateCheck.IsChecked + "|auto_exec:" + autoexeccheck.IsChecked + "]");
 
@@ -88,7 +88,7 @@ namespace AutoMD5
 
         public void checkcompat ()
         {
-            string filename = linkinputbox.Text.Replace("/", "_fs_").Replace("http", "").Replace(":", ""); // clean the string
+            string filename = linkinputbox.Text.Replace("/", "{fs}").Replace("http", "").Replace(":", ""); // clean the string
             try
             {
                 checkremote.IsEnabled = false;

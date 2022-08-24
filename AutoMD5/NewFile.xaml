@@ -10,11 +10,11 @@
         <Label Content="Add new file." HorizontalAlignment="Left" Height="42" Margin="10,10,0,0" VerticalAlignment="Top" Width="159" FontSize="24" Background="{x:Null}" Foreground="#FF5F5F5F"/>
         <TextBox x:Name="linkinputbox" HorizontalAlignment="Left" Height="32" Margin="154,65,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="223" TextChanged="link_TextChanged" FontSize="20"/>
         <Label Content="Direct File Link: " HorizontalAlignment="Left" Height="35" Margin="10,62,0,0" VerticalAlignment="Top" Width="131" FontSize="18"/>
-        <CheckBox x:Name="AutoUpdateCheck" Content="Automatically download new file if old." HorizontalAlignment="Left" Height="19" Margin="15,148,0,0" VerticalAlignment="Top" Width="232" IsChecked="True"/>
+        <CheckBox x:Name="AutoUpdateCheck" Content="Automatically download new file if old." HorizontalAlignment="Left" Height="19" Margin="15,148,0,0" VerticalAlignment="Top" Width="232" IsChecked="True" IsEnabled="False"/>
         <Button x:Name="addbutton" Content="Add File" HorizontalAlignment="Left" Height="25" Margin="290,361,0,0" VerticalAlignment="Top" Width="102" Click="addbutton_Click" IsEnabled="False"/>
         <Label Content="Instructor File:" HorizontalAlignment="Left" Height="35" Margin="10,102,0,0" VerticalAlignment="Top" Width="131" FontSize="18"/>
         <Button x:Name="addbutton_Copy" Content="Select File" HorizontalAlignment="Left" Height="25" Margin="154,109,0,0" VerticalAlignment="Top" Width="102" Click="addbutton_Copy_Click"/>
-        <CheckBox x:Name="autoexeccheck" Content="Auto execute instructor file." HorizontalAlignment="Left" Height="18" Margin="15,172,0,0" VerticalAlignment="Top" Width="191" IsChecked="True"/>
+        <CheckBox x:Name="autoexeccheck" Content="Auto execute instructor file." HorizontalAlignment="Left" Height="18" Margin="15,172,0,0" VerticalAlignment="Top" Width="191" IsChecked="True" IsEnabled="False"/>
         <Rectangle HorizontalAlignment="Left" Height="1" Margin="10,52,0,0" Stroke="#FF898989" VerticalAlignment="Top" Width="382"/>
         <Label x:Name="md5previewtext" Content="################################" HorizontalAlignment="Left" Height="25" Margin="85,244,0,0" VerticalAlignment="Top" Width="238" Background="{x:Null}" Foreground="#FF6E6E6E"/>
         <Label x:Name="warntext" Content="WARNING: Only add instrctor files that you trust!" HorizontalAlignment="Left" Height="25" Margin="57,292,0,0" VerticalAlignment="Top" Width="290" Background="{x:Null}" Foreground="Red" FontWeight="Bold"/>

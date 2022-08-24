@@ -76,21 +76,6 @@ namespace AutoMD5
                         string s1 = f.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
                         string[] s1s = s.Split('|'); // split each propery into it an array
 
-                        title.Content = s1s[2].Replace("f:", ""); // set the title to the file's name
-                        file_md5value.Content = s1s[0].Replace("[m:", ""); // set the md5 title
-                        string instructorfilecontents = "NO DEFINED INSTRUCTIONS FILE";
-                        try
-                        {
-                            instructorfilecontents = s1s[1].Replace("i:", "") + " (INSTRUCTOR FILE):\n" + File.ReadAllText(s1s[1].Replace("i:", ""));
-                        }
-                        catch
-                        {
-                            // no instructor file
-                        }
-                        instructortext.Text = s1s[2].Replace("f:", "") + ": \n" + s1s[3] + "\n" + s1s[4].Replace("]","") + "\n\n" + instructorfilecontents;
-
-                        // re-download and calculate new hash
-                        // add back removed characters
                         string s1_url = s1s[2].Replace("f:", "");
                         string url;
 
@@ -104,9 +89,36 @@ namespace AutoMD5
                         {
                             url = s1_url = "http:" + s1_url;
                         }
-                        
-                        string url_final = url.Replace("_fs_", "/");
-                        Console.WriteLine(url_final);
+
+                        string url_final = url.Replace("{fs}", "/");
+                        string[] urlsplittitle = url_final.Split('/');
+
+                        // replace %20 with space
+
+                        if (url_final.Contains("%20"))
+                        {
+                            title.Content = urlsplittitle[urlsplittitle.Length - 1].Replace("%20", " ");
+                        }
+                        else
+                        {
+                            title.Content = urlsplittitle[urlsplittitle.Length - 1];
+                        }
+
+                        file_md5value.Content = s1s[0].Replace("[m:", ""); // set the old md5 value from the file
+
+                        string instructorfilecontents = "NO DEFINED INSTRUCTIONS FILE";
+                        try
+                        {
+                            instructorfilecontents = s1s[1].Replace("i:", "") + " (INSTRUCTOR FILE):\n" + File.ReadAllText(s1s[1].Replace("i:", ""));
+                        }
+                        catch
+                        {
+                            // no instructor file
+                        }
+                        instructortext.Text = url_final + ": \n" + s1s[3] + "\n" + s1s[4].Replace("]","") + "\n\n" + instructorfilecontents;
+
+                        // re-download and calculate new hash
+                        // add back removed characters
 
                         string newmd5 = "";
                         string filename = s1s[2].Replace("f:", "");
@@ -132,13 +144,14 @@ namespace AutoMD5
                                 }
                             }
                             string oldmd5 = "";
-                            file_md5value.Content = "";
-                            oldmd5 = file_md5value.Content.ToString();
+                            file_md5value.Content = s1s[0].Replace("[m:", "");
+                            oldmd5 = file_md5value.Content.ToString().Replace("\n","");
                             // compare md5s
                             if (newmd5 != oldmd5)
                             {
                                 // file is outdated! move new file to files folder and update md5 value
-                                statustext.Content = "Outdated MD5.";
+                                statustext.Content = "⚠️ Outdated MD5";
+                                instructortext.Text = "MD5 MISMATCH! \nOLD: " + oldmd5 + "\nNEW: " + newmd5 + "\n\n" + instructortext.Text;
 
                                 // copy the file out of temp into files folder
                                 File.Copy(@"c:\\ProgramData\AutoMD5\tmp\" + filename, @"c:\\ProgramData\AutoMD5\files\" + filename);
@@ -147,19 +160,20 @@ namespace AutoMD5
                                 string data = File.ReadAllText(datafile).Replace(oldmd5, newmd5);
                                 File.WriteAllText(datafile, data);
 
-                                statustext.Content = "File updated just now.";
+                                try
+                                {
+                                    // execute instructor
+                                    System.Diagnostics.Process.Start(s1s[1].Replace("i:", ""));
+                                }
+                                catch
+                                {
+                                }
+
+                                statustext.Content = "ℹ️ File updated just now.";
                             }
                             else
                             {
-                                statustext.Content = "File is up to date.";
-                            }
-                            try
-                            {
-                                // execute instructor
-                                System.Diagnostics.Process.Start(s1s[1].Replace("i:", ""));
-                            }
-                            catch
-                            {
+                                statustext.Content = "✔️ File is up to date.";
                             }
                         }
                         catch(Exception e)
