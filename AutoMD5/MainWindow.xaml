@@ -5,10 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutoMD5"
         mc:Ignorable="d"
-        Title="AutoMD5 - Dashboard" Height="768" Width="1366" ResizeMode="CanMinimize">
+        Title="AutoMD5 - Dashboard" Height="768" Width="1366" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <Grid>
-        <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="666" Margin="10,61,0,0" Stroke="Black" VerticalAlignment="Top" Width="219"/>
         <Label Content="AutoMD5" HorizontalAlignment="Left" Height="42" Margin="63,10,0,0" VerticalAlignment="Top" Width="108" FontSize="24" FontFamily="Yu Gothic UI Light" FontWeight="Bold"/>
+        <Button Content="New File" HorizontalAlignment="Left" Height="28" Margin="1228,691,0,0" VerticalAlignment="Top" Width="109" Click="Button_Click"/>
+        <Button x:Name="checkupdates" Content="Recheck All" HorizontalAlignment="Left" Height="28" Margin="1228,658,0,0" VerticalAlignment="Top" Width="109" Click="checkupdates_Click"/>
+        <ListView x:Name="filelist" HorizontalAlignment="Left" Height="658" Margin="10,61,0,0" VerticalAlignment="Top" Width="219" SelectionChanged="filelist_SelectionChanged">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button x:Name="aboutbutton" Content="App Credits" HorizontalAlignment="Left" Height="28" Margin="1228,625,0,0" VerticalAlignment="Top" Width="109" Click="aboutbutton_Click"/>
+        <Label x:Name="title" Content="Select a file.." HorizontalAlignment="Left" Height="43" Margin="234,61,0,0" VerticalAlignment="Top" Width="726" FontSize="24" FontFamily="Yu Gothic UI Light"/>
+        <TextBox HorizontalAlignment="Left" Height="246" Margin="242,109,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="718"/>
+        <Label x:Name="file_md5value" Content="################################" HorizontalAlignment="Left" Height="43" Margin="242,360,0,0" VerticalAlignment="Top" Width="718" FontSize="24" FontFamily="Yu Gothic UI Light"/>
 
     </Grid>
 </Window>
