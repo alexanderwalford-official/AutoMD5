@@ -38,10 +38,14 @@ namespace AutoMD5
                     string s = File.ReadAllText(datafile);
                     string[] lines = s.Split('[');
                     filelist.Items.Clear();
+                    filelist.Items.Refresh();
+
+                    int i = 0;
 
                     foreach (string f in lines)
                     {
                         string s1 = f.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
+
                         string[] s1s = s.Split('|'); // split each propery into it an array
 
                         string s1_url = s1s[2].Replace("f:", "");
@@ -82,19 +86,37 @@ namespace AutoMD5
                             DisplayMemberBinding = new Binding("id")
                         });
 
-                        // Populate list
-                       
+                        // string array duplication bug fix 
+
+                        //tag duplicates for removal
+                        List<ListItem> toRemove = new List<ListItem>();
+                        foreach (ListItem item1 in filelist.Items)
+                        {
+                            foreach (ListItem item2 in filelist.Items)
+                            {
+                                //compare the two items
+                                if (item1.filename == item2.filename)
+                                    toRemove.Add(item2);
+                            }
+                        }
+
+                        //remove duplicates
+                        foreach (ListItem item in toRemove)
+                        {
+                            filelist.Items.Remove(item);
+                        }
+
                         if (url_final.Contains("%20"))
                         {
-                            filelist.Items.Add(new ListItem { IsUpdated = "⚠️", id = s1s[2], filename = urlsplittitle[urlsplittitle.Length - 1].Replace("%20", " ") });
+                            filelist.Items.Add(new ListItem { IsUpdated = "?", id = s1s[2], filename = urlsplittitle[urlsplittitle.Length - 1].Replace("%20", " ") });
                         }
                         else
                         {
-                            filelist.Items.Add(new ListItem { IsUpdated = "⚠️", id = s1s[2], filename = urlsplittitle[urlsplittitle.Length - 1] });
+                            filelist.Items.Add(new ListItem { IsUpdated = "?", id = s1s[2], filename = urlsplittitle[urlsplittitle.Length - 1] });
                         }
-                        
-                    }
 
+                        i++;
+                    }
                 }
                 else
                 {
@@ -235,7 +257,8 @@ namespace AutoMD5
             catch (Exception e)
             {
                 title.Content = "ERROR READING ENTRY";
-                file_md5value.Content = "?????????";
+                file_md5value.Content = "";
+                statustext.Content = "⚠️ Error detected.";
                 instructortext.Text = e.Message;
             }
 
@@ -263,6 +286,9 @@ namespace AutoMD5
 
         private void filelist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            checkselectedbutton.IsEnabled = true;
+            removeselectedbutton.IsEnabled = true;
+
             object o = null;
             try
             {
@@ -275,6 +301,61 @@ namespace AutoMD5
                 }  
             }
             catch { }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            // check selected
+            object o = null;
+            try
+            {
+                // menu item clicked
+                o = filelist.SelectedIndex;
+
+                if (o != null)
+                {
+                    getdata(o.ToString());
+                }
+            }
+            catch { }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            // remove selected
+            object o = null;
+            o = filelist.SelectedIndex;
+            string s = o.ToString();
+
+            // remove current entry from file
+
+            string[] lines = File.ReadAllLines(datafile);
+            string linetoremovedata = "";
+
+            int i = 0;
+            int linetoremove = 0;
+
+            foreach (string l in lines)
+            {
+                if (l.Contains(s))
+                {
+                    linetoremove = i;
+                    linetoremovedata = l;
+                }
+                i++;
+            }
+
+            string newdata = File.ReadAllText(datafile).Replace(linetoremovedata, "");
+            File.WriteAllText(datafile, newdata);
+
+            // now delete the file from /files
+            string s1 = linetoremovedata.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
+            string[] s1s = s.Split('|'); // split each propery into it an array
+            string s1_url = s1s[2].Replace("f:", "");
+            File.Delete(s1_url);
+
+            // update the list view
+            getchecks();
         }
     }
 }

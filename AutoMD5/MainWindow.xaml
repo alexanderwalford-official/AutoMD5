@@ -13,7 +13,6 @@
         <ListView x:Name="filelist" HorizontalAlignment="Left" Height="658" Margin="10,61,0,0" VerticalAlignment="Top" Width="219" SelectionChanged="filelist_SelectionChanged">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn/>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -22,6 +21,8 @@
         <TextBox x:Name="instructortext" HorizontalAlignment="Left" Height="246" Margin="242,109,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="718" IsEnabled="False"/>
         <Label x:Name="file_md5value" Content="" HorizontalAlignment="Left" Height="170" Margin="242,360,0,0" VerticalAlignment="Top" Width="718" FontSize="24" FontFamily="Yu Gothic UI Light"/>
         <Label x:Name="statustext" Content="" HorizontalAlignment="Left" Height="71" Margin="242,538,0,0" VerticalAlignment="Top" Width="718" FontSize="24" FontFamily="Yu Gothic UI Light"/>
+        <Button x:Name="removeselectedbutton" Content="Remove Selected" HorizontalAlignment="Left" Height="28" Margin="731,680,0,0" VerticalAlignment="Top" Width="115" Background="Red" BorderBrush="{x:Null}" Foreground="White" Click="Button_Click_2" IsEnabled="False"/>
+        <Button x:Name="checkselectedbutton" Content="Check Selected" HorizontalAlignment="Left" Height="28" Margin="731,648,0,0" VerticalAlignment="Top" Width="115" Background="#FF00953D" BorderBrush="{x:Null}" Foreground="White" Click="Button_Click_1" IsEnabled="False"/>
 
     </Grid>
 </Window>
