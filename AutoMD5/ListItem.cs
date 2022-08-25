@@ -9,6 +9,7 @@ namespace AutoMD5
     class ListItem
     {
         public string IsUpdated { get; set; }
+        public string IsSSL { get; set; }
         public string id { get; set; }
         public string filename { get; set; }
     }

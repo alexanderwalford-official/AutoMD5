@@ -17,7 +17,7 @@
             </ListView.View>
         </ListView>
         <Button x:Name="aboutbutton" Content="App Credits" HorizontalAlignment="Left" Height="28" Margin="851,614,0,0" VerticalAlignment="Top" Width="109" Click="aboutbutton_Click"/>
-        <Label x:Name="title" Content="Select a file.." HorizontalAlignment="Left" Height="43" Margin="234,61,0,0" VerticalAlignment="Top" Width="726" FontSize="24" FontFamily="Yu Gothic UI Light"/>
+        <Label x:Name="title" Content="Select a file.." HorizontalAlignment="Left" Height="43" Margin="242,61,0,0" VerticalAlignment="Top" Width="718" FontSize="24" FontFamily="Yu Gothic UI Light"/>
         <TextBox x:Name="instructortext" HorizontalAlignment="Left" Height="246" Margin="242,109,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="718" IsEnabled="False"/>
         <Label x:Name="file_md5value" Content="" HorizontalAlignment="Left" Height="170" Margin="242,360,0,0" VerticalAlignment="Top" Width="718" FontSize="24" FontFamily="Yu Gothic UI Light"/>
         <Label x:Name="statustext" Content="" HorizontalAlignment="Left" Height="71" Margin="242,538,0,0" VerticalAlignment="Top" Width="718" FontSize="24" FontFamily="Yu Gothic UI Light"/>

@@ -1,0 +1,17 @@
+﻿<Window x:Class="AutoMD5.Welcome"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AutoMD5"
+        mc:Ignorable="d"
+        Title="AutoMD5 - Welcome!" Height="186" Width="568" ResizeMode="NoResize" Topmost="True" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Label Content="AutoMD5 - First Time Use" HorizontalAlignment="Left" Height="42" Margin="10,10,0,0" VerticalAlignment="Top" Width="273" FontSize="24" FontFamily="Yu Gothic UI Light" FontWeight="Bold"/>
+        <Label Content="Welcome to AutoMD5, developed by Alexander Walford 2022. This project is entirely open source." HorizontalAlignment="Left" Height="29" Margin="10,52,0,0" VerticalAlignment="Top" Width="504" FontFamily="Yu Gothic UI Light" FontWeight="Bold"/>
+        <Label Content="Feel free to redistrubute, modify and improve the source code by visiting the link below:" HorizontalAlignment="Left" Height="29" Margin="10,70,0,0" VerticalAlignment="Top" Width="504" FontFamily="Yu Gothic UI Light" FontWeight="Bold"/>
+        <Button Content="Get Source Code" HorizontalAlignment="Left" Height="34" Margin="10,104,0,0" VerticalAlignment="Top" Width="123" Click="Button_Click"/>
+        <Rectangle Fill="Black" HorizontalAlignment="Left" Height="6" Margin="10,8,0,0" Stroke="Black" VerticalAlignment="Top" Width="534"/>
+
+    </Grid>
+</Window>

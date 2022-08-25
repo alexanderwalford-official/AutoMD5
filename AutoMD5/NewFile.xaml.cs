@@ -34,17 +34,24 @@ namespace AutoMD5
         {
             try
             {
-                // add an exclusive link paramter for rechecking?
-
                 string filename = linkinputbox.Text.Replace("/", "{fs}").Replace("http", "").Replace(":", ""); // clean the string
                 // first, we need to add the record to the files list file
                 File.WriteAllText(datafile, File.ReadAllText(datafile) + "\n[m:" + md5previewtext.Content + "|i:" + newinstructorfile + "|f:" + filename + "|auto_download:" + AutoUpdateCheck.IsChecked + "|auto_exec:" + autoexeccheck.IsChecked + "]");
 
-                // now download the file to /files
+                // now copy file from tmp to files
+                File.Copy(@"c:\\ProgramData\AutoMD5\tmp\" + filename, @"c:\\ProgramData\AutoMD5\files\" + filename);
 
-                using (var client = new WebClient())
+                // clean up the temp folder
+                if (Directory.Exists(@"c:\\ProgramData\AutoMD5\tmp\"))
                 {
-                    client.DownloadFile(linkinputbox.Text, @"c:\\ProgramData\AutoMD5\files\" + filename);
+                    try
+                    {
+                        File.Delete(@"c:\\ProgramData\AutoMD5\tmp\" + filename);
+                        Directory.Delete(@"c:\\ProgramData\AutoMD5\tmp\");
+                    }
+                    catch
+                    {
+                    }
                 }
 
                 if (hasinstructor)
@@ -52,6 +59,9 @@ namespace AutoMD5
                     // try to execute the instructor batch file
                     System.Diagnostics.Process.Start(openFileDialog.FileName);
                 }
+
+                // call getchecks in main window
+                ((MainWindow)this.Owner).getchecks();
 
                 // close window, it worked!
                 this.Close();
@@ -129,18 +139,6 @@ namespace AutoMD5
                 Console.WriteLine(e.Message);
             }
 
-            // clean up the temp folder
-            if (Directory.Exists(@"c:\\ProgramData\AutoMD5\tmp\"))
-            {
-                try
-                {
-                    File.Delete(@"c:\\ProgramData\AutoMD5\tmp\" + filename);
-                    Directory.Delete(@"c:\\ProgramData\AutoMD5\tmp\");
-                }
-                catch
-                {
-                }
-            }
             checkremote.IsEnabled = true;
         }
 
