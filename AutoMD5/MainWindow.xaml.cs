@@ -25,6 +25,7 @@ namespace AutoMD5
     {
         string datafile = @"c:\\ProgramData\AutoMD5\files.txt";
         bool isupdated = false;
+        List<string> files = new List<string>();
 
         public MainWindow()
         {
@@ -137,11 +138,9 @@ namespace AutoMD5
                             {
                                 filelist.Items.Add(new ListItem { IsUpdated = icon, count = i, id = s1s[2].Replace("f:", ""), IsSSL = "❌", filename = urlsplittitle[urlsplittitle.Length - 1] });
                             }
-                            Console.WriteLine(filelist.Items.Count);
-                            i++;
+                            files.Add(s1s[2].Replace("f:", ""));
+                            i++; 
                         }
-
-
                     }
                 }
                 else
@@ -161,12 +160,11 @@ namespace AutoMD5
             }
 
         }
-
-        string filename;
-        string[] s1s;
-
+        bool isdoingsomething;
         void getdata(string input)
         {
+            string target = files[int.Parse(input)];
+
             try
             {
                 string s = File.ReadAllText(datafile);
@@ -174,10 +172,18 @@ namespace AutoMD5
 
                 foreach (string f in lines)
                 {
-                    if (f.Contains(input))
+                    if (f.Contains(target) && !isdoingsomething)
                     {
+                        isdoingsomething = true;
+                        string filename;
+                        string[] s1s;
+
+                        Console.WriteLine("line contains input:");
+                        Console.WriteLine("line: " + f);
+                        Console.WriteLine("input: " + target);
+
                         string s1 = f.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
-                        s1s = s.Split('|'); // split each propery into it an array
+                        s1s = s1.Split('|'); // split each propery into it an array
 
                         string s1_url = s1s[2].Replace("f:", "");
                         string url;
@@ -238,18 +244,22 @@ namespace AutoMD5
                             removeselectedbutton.IsEnabled = false;
                             filelist.IsEnabled = false;
 
+                            Uri newuri = new Uri(url_final);
+
+                            Console.WriteLine("Downloading " + url_final);
+
                             // download the file to a temp dir
+                            client.QueryString.Add("filename", filename);
+                            client.QueryString.Add("s1", s1); 
                             client.DownloadFileCompleted += client_DownloadFileCompleted;
                             client.DownloadProgressChanged += client_DownloadProgressChanged;
-                            client.DownloadFileAsync(new Uri(url_final), @"c:\\ProgramData\AutoMD5\tmp\" + filename);
-                            
+                            client.DownloadFileAsync(newuri, @"c:\\ProgramData\AutoMD5\tmp\" + filename);         
                             client.Dispose();
                         }
                         catch (Exception e)
                         {
                             statustext.Content = e.Message;
                         }
-
                     }
                 }
             }
@@ -272,17 +282,21 @@ namespace AutoMD5
         {
             if (e.Error == null)
             {
-                contop();
+                string filename = ((System.Net.WebClient)(sender)).QueryString["filename"];
+                string s1 = ((System.Net.WebClient)(sender)).QueryString["s1"];
+                contop(filename, s1);
             }
             else
             {
-                Console.WriteLine(e.Error);
+                statustext.Content = e.Error.Message;
             }
         }
 
         // file completed download
-        void contop () {
-            Thread.Sleep(100);
+        void contop (string filename, string s1) {
+
+            // convert s1 back to s1s
+            string[] s1s = s1.Split('|');
 
             // check the md5
             var md5 = MD5.Create();
@@ -335,6 +349,7 @@ namespace AutoMD5
             checkselectedbutton.IsEnabled = true;
             removeselectedbutton.IsEnabled = true;
             filelist.IsEnabled = true;
+            isdoingsomething = false;
             getchecks();
         }
 
@@ -361,22 +376,20 @@ namespace AutoMD5
 
         private void filelist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             object o = null;
             try
             {
                 // menu item clicked
-                o = filelist.SelectedIndex;
+                o = filelist.SelectedIndex; // starts at 0
 
                 if (o != null)
                 {
                     getdata(o.ToString());
-                    Console.WriteLine(o.ToString());
+                    Console.WriteLine(o);
                 }
             }
             catch
             {
-                title.Content = "Error";
             }
         }
 
@@ -399,7 +412,6 @@ namespace AutoMD5
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            // remove selected
             object o = null;
             o = filelist.SelectedIndex;
             string s = o.ToString();
