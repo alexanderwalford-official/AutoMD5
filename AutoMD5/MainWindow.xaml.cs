@@ -171,112 +171,112 @@ namespace AutoMD5
         bool isdoingsomething;
         void getdata(string input)
         {
-            string target = files[int.Parse(input)];
-
-            try
+            if (int.Parse(input) < files.Count())
             {
-                string s = File.ReadAllText(datafile);
-                string[] lines = s.Split('[');
+                string target = files[int.Parse(input)];
 
-                foreach (string f in lines)
+                try
                 {
-                    if (f.Contains(target) && !isdoingsomething)
+                    string s = File.ReadAllText(datafile);
+                    string[] lines = s.Split('[');
+
+                    foreach (string f in lines)
                     {
-                        isdoingsomething = true;
-                        string filename;
-                        string[] s1s;
-
-                        Console.WriteLine("line contains input:");
-                        Console.WriteLine("line: " + f);
-                        Console.WriteLine("input: " + target);
-
-                        string s1 = f.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
-                        s1s = s1.Split('|'); // split each propery into it an array
-
-                        string s1_url = s1s[2].Replace("f:", "");
-                        string url;
-
-                        if (s1_url.StartsWith("s"))
+                        if (f.Contains(target) && !isdoingsomething)
                         {
-                            // ssl mode
-                            s1_url = s1_url.Remove(0, 1); // remove s so we can add it back to the correct part
-                            url = s1_url = "https:" + s1_url;
-                        }
-                        else
-                        {
-                            url = s1_url = "http:" + s1_url;
-                        }
+                            isdoingsomething = true;
+                            checkupdates.IsEnabled = false;
+                            string filename;
+                            string[] s1s;
 
-                        string url_final = url.Replace("{fs}", "/");
-                        string[] urlsplittitle = url_final.Split('/');
+                            string s1 = f.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
+                            s1s = s1.Split('|'); // split each propery into it an array
 
-                        // replace %20 with space
+                            string s1_url = s1s[2].Replace("f:", "");
+                            string url;
 
-                        if (url_final.Contains("%20"))
-                        {
-                            title.Content = urlsplittitle[urlsplittitle.Length - 1].Replace("%20", " ");
-                        }
-                        else
-                        {
-                            title.Content = urlsplittitle[urlsplittitle.Length - 1];
-                        }
+                            if (s1_url.StartsWith("s"))
+                            {
+                                // ssl mode
+                                s1_url = s1_url.Remove(0, 1); // remove s so we can add it back to the correct part
+                                url = s1_url = "https:" + s1_url;
+                            }
+                            else
+                            {
+                                url = s1_url = "http:" + s1_url;
+                            }
 
-                        file_md5value.Content = s1s[0].Replace("[m:", ""); // set the old md5 value from the file
+                            string url_final = url.Replace("{fs}", "/");
+                            string[] urlsplittitle = url_final.Split('/');
 
-                        string instructorfilecontents = "NO DEFINED INSTRUCTIONS FILE";
-                        try
-                        {
-                            instructorfilecontents = s1s[1].Replace("i:", "") + " (INSTRUCTOR FILE):\n" + File.ReadAllText(s1s[1].Replace("i:", ""));
-                        }
-                        catch
-                        {
-                            // no instructor file
-                        }
+                            // replace %20 with space
 
-                        instructortext.Text = url_final + ": \n" + s1s[3] + "\n" + s1s[4].Replace("]", "") + "\n\n" + instructorfilecontents;
+                            if (url_final.Contains("%20"))
+                            {
+                                title.Content = urlsplittitle[urlsplittitle.Length - 1].Replace("%20", " ");
+                            }
+                            else
+                            {
+                                title.Content = urlsplittitle[urlsplittitle.Length - 1];
+                            }
 
-                        // re-download and calculate new hash
-                        // add back removed characters
-                        
-                        filename = s1s[2].Replace("f:", "");
-                        
-                        try
-                        {
-                            var client = new WebClient();
+                            file_md5value.Content = s1s[0].Replace("[m:", ""); // set the old md5 value from the file
 
-                            // create a temp working dir
-                            Directory.CreateDirectory(@"c:\\ProgramData\AutoMD5\tmp\");
+                            string instructorfilecontents = "NO DEFINED INSTRUCTIONS FILE";
+                            try
+                            {
+                                instructorfilecontents = s1s[1].Replace("i:", "") + " (INSTRUCTOR FILE):\n" + File.ReadAllText(s1s[1].Replace("i:", ""));
+                            }
+                            catch
+                            {
+                                // no instructor file
+                            }
 
-                            statustext.Content = "Checking hash..";
-                            checkselectedbutton.IsEnabled = false;
-                            removeselectedbutton.IsEnabled = false;
-                            filelist.IsEnabled = false;
+                            instructortext.Text = url_final + ": \n" + s1s[3] + "\n" + s1s[4].Replace("]", "") + "\n\n" + instructorfilecontents;
 
-                            Uri newuri = new Uri(url_final);
+                            // re-download and calculate new hash
+                            // add back removed characters
 
-                            Console.WriteLine("Downloading " + url_final);
+                            filename = s1s[2].Replace("f:", "");
 
-                            // download the file to a temp dir
-                            client.QueryString.Add("filename", filename);
-                            client.QueryString.Add("s1", s1); 
-                            client.DownloadFileCompleted += client_DownloadFileCompleted;
-                            client.DownloadProgressChanged += client_DownloadProgressChanged;
-                            client.DownloadFileAsync(newuri, @"c:\\ProgramData\AutoMD5\tmp\" + filename);         
-                            client.Dispose();
-                        }
-                        catch (Exception e)
-                        {
-                            statustext.Content = e.Message;
+                            try
+                            {
+                                var client = new WebClient();
+
+                                // create a temp working dir
+                                Directory.CreateDirectory(@"c:\\ProgramData\AutoMD5\tmp\");
+
+                                statustext.Content = "Checking hash..";
+                                checkselectedbutton.IsEnabled = false;
+                                removeselectedbutton.IsEnabled = false;
+                                filelist.IsEnabled = false;
+
+                                Uri newuri = new Uri(url_final);
+
+                                Console.WriteLine("Downloading " + url_final);
+
+                                // download the file to a temp dir
+                                client.QueryString.Add("filename", filename);
+                                client.QueryString.Add("s1", s1);
+                                client.DownloadFileCompleted += client_DownloadFileCompleted;
+                                client.DownloadProgressChanged += client_DownloadProgressChanged;
+                                client.DownloadFileAsync(newuri, @"c:\\ProgramData\AutoMD5\tmp\" + filename);
+                                client.Dispose();
+                            }
+                            catch (Exception e)
+                            {
+                                statustext.Content = e.Message;
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                title.Content = "ERROR READING ENTRY";
-                file_md5value.Content = "";
-                statustext.Content = "⚠️ Error detected.";
-                instructortext.Text = e.Message;
+                catch (Exception e)
+                {
+                    title.Content = "ERROR READING ENTRY";
+                    file_md5value.Content = "";
+                    statustext.Content = "⚠️ Error detected.";
+                    instructortext.Text = e.Message;
+                }
             }
 
         }
@@ -358,6 +358,7 @@ namespace AutoMD5
             removeselectedbutton.IsEnabled = true;
             filelist.IsEnabled = true;
             isdoingsomething = false;
+            checkupdates.IsEnabled = true;
             getchecks();
         }
 
@@ -371,8 +372,13 @@ namespace AutoMD5
 
         private void checkupdates_Click(object sender, RoutedEventArgs e)
         {
+            checkupdates.IsEnabled = false;
             // recheck the MD5s
             getchecks();
+            for(int i = 0; i < 49; i+=1)
+            {
+                getdata(i.ToString());             
+            }         
         }
 
         private void aboutbutton_Click(object sender, RoutedEventArgs e)
