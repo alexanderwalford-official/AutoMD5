@@ -26,6 +26,7 @@ namespace AutoMD5
         string datafile = @"c:\\ProgramData\AutoMD5\files.txt";
         bool isupdated = false;
         List<string> files = new List<string>();
+        public bool passback = false;
 
         public MainWindow()
         {
@@ -52,6 +53,13 @@ namespace AutoMD5
 
         public void getchecks()
         {
+            // reset if passback, only an attempt for fixing this bug
+            if (passback)
+            {
+                files.Clear();
+                passback = false;
+            }
+
             try
             {
                 if (File.Exists(datafile))

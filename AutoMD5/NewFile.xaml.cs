@@ -15,6 +15,7 @@ using System.Security.Cryptography;
 using System.IO;
 using Microsoft.Win32;
 using System.Net;
+using System.ComponentModel;
 
 namespace AutoMD5
 {
@@ -61,6 +62,7 @@ namespace AutoMD5
                 }
 
                 // call getchecks in main window
+                ((MainWindow)this.Owner).passback = true;
                 ((MainWindow)this.Owner).getchecks();
 
                 // close window, it worked!
@@ -113,24 +115,23 @@ namespace AutoMD5
 
                 // create a temp working dir
                 Directory.CreateDirectory(@"c:\\ProgramData\AutoMD5\tmp\");
+
+
+                var client = new WebClient();
+
+                // create a temp working dir
+                Directory.CreateDirectory(@"c:\\ProgramData\AutoMD5\tmp\");
+
+                md5previewtext.Content = "Checking hash..";
+
+                Uri newuri = new Uri(linkinputbox.Text);
+
                 // download the file to a temp dir
-                using (var client = new WebClient())
-                {
-                    client.DownloadFile(linkinputbox.Text, @"c:\\ProgramData\AutoMD5\tmp\" + filename);        
-                }
+                client.QueryString.Add("filename", filename);
+                client.DownloadFileCompleted += client_DownloadFileCompleted;
+                client.DownloadProgressChanged += client_DownloadProgressChanged;
+                client.DownloadFileAsync(newuri, @"c:\\ProgramData\AutoMD5\tmp\" + filename);
 
-                // check the md5
-                using (var md5 = MD5.Create())
-                {
-                    using (var stream = File.OpenRead(@"c:\\ProgramData\AutoMD5\tmp\" + filename))
-                    {
-                        var hash = md5.ComputeHash(stream);
-                        md5previewtext.Content = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                    }
-                }
-
-                // enable the add button
-                addbutton.IsEnabled = true;
             }
             catch (Exception e)
             {
@@ -138,8 +139,43 @@ namespace AutoMD5
                 addbutton.IsEnabled = false;
                 Console.WriteLine(e.Message);
             }
-
             checkremote.IsEnabled = true;
+        }
+
+        void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            md5previewtext.Content = "Checking hash.. (" + e.ProgressPercentage + "%)";
+        }
+
+        void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            if (e.Error == null)
+            {
+                string filename = ((System.Net.WebClient)(sender)).QueryString["filename"];
+                contop(filename);
+            }
+            else
+            {
+                md5previewtext.Content = e.Error.Message;
+            }
+        }
+
+        void contop(string filename)
+        {
+            // move these..
+
+            // check the md5
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(@"c:\\ProgramData\AutoMD5\tmp\" + filename))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    md5previewtext.Content = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
+
+            // enable the add button
+            addbutton.IsEnabled = true;
         }
 
         private void addbutton_Click(object sender, RoutedEventArgs e)
