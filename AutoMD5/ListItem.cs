@@ -12,5 +12,6 @@ namespace AutoMD5
         public string IsSSL { get; set; }
         public string id { get; set; }
         public string filename { get; set; }
+        public int count { get; set; }
     }
 }

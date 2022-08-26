@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -31,6 +32,23 @@ namespace AutoMD5
             getchecks();
         }
 
+        void DarkMode()
+        {
+            this.Background = System.Windows.Media.Brushes.Black;
+            appname.Foreground = System.Windows.Media.Brushes.White;
+            title.Foreground = System.Windows.Media.Brushes.White;
+            file_md5value.Foreground = System.Windows.Media.Brushes.White;
+            statustext.Foreground = System.Windows.Media.Brushes.White;
+        }
+        void LightMode()
+        {
+            this.Background = System.Windows.Media.Brushes.White;
+            appname.Foreground = System.Windows.Media.Brushes.Black;
+            title.Foreground = System.Windows.Media.Brushes.Black;
+            file_md5value.Foreground = System.Windows.Media.Brushes.Black;
+            statustext.Foreground = System.Windows.Media.Brushes.Black;
+        }
+
         public void getchecks()
         {
             try
@@ -41,100 +59,89 @@ namespace AutoMD5
                     string s = File.ReadAllText(datafile);
                     string[] lines = s.Split('[');
                     filelist.Items.Clear();
-                    filelist.Items.Refresh();
 
-                    int i = 0;
+                    int i = 0; // localised counter
+
+                    var gridView = new GridView(); // new gridview obj
+                    this.filelist.View = gridView;
+
+                    // add the culumns
+                    gridView.Columns.Add(new GridViewColumn
+                    {
+                        Header = "#",
+                        DisplayMemberBinding = new Binding("count")
+                    });
+                    gridView.Columns.Add(new GridViewColumn
+                    {
+                        Header = "Latest?",
+                        DisplayMemberBinding = new Binding("IsUpdated")
+                    });
+                    gridView.Columns.Add(new GridViewColumn
+                    {
+                        Header = "File Name",
+                        DisplayMemberBinding = new Binding("filename")
+                    });
+                    gridView.Columns.Add(new GridViewColumn
+                    {
+                        Header = "SSL?",
+                        DisplayMemberBinding = new Binding("IsSSL")
+                    });
+                    gridView.Columns.Add(new GridViewColumn
+                    {
+                        Header = "Raw ID",
+                        DisplayMemberBinding = new Binding("id")
+                    });
 
                     foreach (string f in lines)
                     {
-                        string s1 = f.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
 
-                        string[] s1s = s.Split('|'); // split each propery into it an array
+                        if (f != "\n")
+                        {
+                            string s1 = f.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
 
-                        string s1_url = s1s[2].Replace("f:", "");
-                        string url;
+                            string[] s1s = s1.Split('|'); // split each propery into it an array
 
-                        if (s1_url.StartsWith("s"))
-                        {
-                            // ssl mode
-                            s1_url = s1_url.Remove(0, 1); // remove s so we can add it back to the correct part
-                            url = s1_url = "https:" + s1_url;
-                        }
-                        else
-                        {
-                            url = s1_url = "http:" + s1_url;
-                        }
+                            string s1_url = s1s[2].Replace("f:", "");
+                            string url;
 
-                        string url_final = url.Replace("{fs}", "/");
-                        string[] urlsplittitle = url_final.Split('/');
-
-                        var gridView = new GridView();
-                        this.filelist.View = gridView;
-                        gridView.Columns.Add(new GridViewColumn
-                        {
-                            Header = "Latest?",
-                            DisplayMemberBinding = new Binding("IsUpdated")
-                        });
-                        gridView.Columns.Add(new GridViewColumn
-                        {
-                            Header = "File Name",
-                            DisplayMemberBinding = new Binding("filename")
-                        });
-                        gridView.Columns.Add(new GridViewColumn
-                        {
-                            Header = "SSL?",
-                            DisplayMemberBinding = new Binding("IsSSL")
-                        });
-                        gridView.Columns.Add(new GridViewColumn
-                        {
-                            Header = "Raw ID",
-                            DisplayMemberBinding = new Binding("id")
-                        });
-
-                        // string array duplication bug fix 
-
-                        //tag duplicates for removal
-                        List<ListItem> toRemove = new List<ListItem>();
-                        foreach (ListItem item1 in filelist.Items)
-                        {
-                            foreach (ListItem item2 in filelist.Items)
+                            if (s1_url.StartsWith("s"))
                             {
-                                //compare the two items
-                                if (item1.filename == item2.filename)
-                                {
-                                    toRemove.Add(item2);
-                                }  
+                                // ssl mode
+                                s1_url = s1_url.Remove(0, 1); // remove s so we can add it back to the correct part
+                                url = s1_url = "https:" + s1_url;
                             }
+                            else
+                            {
+                                url = s1_url = "http:" + s1_url;
+                            }
+
+                            string url_final = url.Replace("{fs}", "/");
+                            string[] urlsplittitle = url_final.Split('/');
+                            string icon = "";
+
+                            if (isupdated)
+                            {
+                                icon = "✔️";
+                            }
+                            else
+                            {
+                                icon = "❌";
+                            }
+
+                            // replace %20 with spaces
+                            if (url_final.Contains("%20"))
+                            {
+                                filelist.Items.Add(new ListItem { IsUpdated = icon, count = i, id = s1s[2].Replace("f:", ""), IsSSL = "✔️", filename = urlsplittitle[urlsplittitle.Length - 1].Replace("%20", " ") });
+                            }
+                            else
+                            {
+                                filelist.Items.Add(new ListItem { IsUpdated = icon, count = i, id = s1s[2].Replace("f:", ""), IsSSL = "❌", filename = urlsplittitle[urlsplittitle.Length - 1] });
+                            }
+                            Console.WriteLine(filelist.Items.Count);
+                            i++;
                         }
 
-                        //remove duplicates
-                        foreach (ListItem item in toRemove)
-                        {
-                            filelist.Items.Remove(item);
-                        }
 
-                        string icon = "?";
-
-                        if (isupdated)
-                        {
-                            icon = "✔️";
-                        }
-                        else
-                        {
-                            icon = "❌";
-                        }
-
-                        // replace %20 with spaces
-                        if (url_final.Contains("%20"))
-                        {
-                            filelist.Items.Add(new ListItem { IsUpdated = icon, id = s1s[2].Replace("f:",""), IsSSL= "✔️", filename = urlsplittitle[urlsplittitle.Length - 1].Replace("%20", " ") });
-                        }
-                        else
-                        {
-                            filelist.Items.Add(new ListItem { IsUpdated = icon, id = s1s[2].Replace("f:", ""), IsSSL = "❌", filename = urlsplittitle[urlsplittitle.Length - 1] });
-                        }
-
-                        i++;
                     }
                 }
                 else
@@ -143,7 +150,7 @@ namespace AutoMD5
                     Directory.CreateDirectory(@"c:\\ProgramData\AutoMD5\");
                     Directory.CreateDirectory(@"c:\\ProgramData\AutoMD5\files\");
                     File.Create(datafile);
-                    
+
                     // show welcome win
                     var win = new Welcome();
                     win.Show();
@@ -155,11 +162,14 @@ namespace AutoMD5
 
         }
 
+        string filename;
+        string[] s1s;
+
         void getdata(string input)
         {
             try
             {
-                string s = File.ReadAllText(datafile);               
+                string s = File.ReadAllText(datafile);
                 string[] lines = s.Split('[');
 
                 foreach (string f in lines)
@@ -167,7 +177,7 @@ namespace AutoMD5
                     if (f.Contains(input))
                     {
                         string s1 = f.Replace("[", "").Replace("]", ""); // m:###################|i:instructor.bat|f:file.file|auto_download:1|auto_exec:1
-                        string[] s1s = s.Split('|'); // split each propery into it an array
+                        s1s = s.Split('|'); // split each propery into it an array
 
                         string s1_url = s1s[2].Replace("f:", "");
                         string url;
@@ -209,81 +219,35 @@ namespace AutoMD5
                             // no instructor file
                         }
 
-                        instructortext.Text = url_final + ": \n" + s1s[3] + "\n" + s1s[4].Replace("]","") + "\n\n" + instructorfilecontents;
+                        instructortext.Text = url_final + ": \n" + s1s[3] + "\n" + s1s[4].Replace("]", "") + "\n\n" + instructorfilecontents;
 
                         // re-download and calculate new hash
                         // add back removed characters
-
-                        string newmd5 = "";
-                        string filename = s1s[2].Replace("f:", "");
-
+                        
+                        filename = s1s[2].Replace("f:", "");
+                        
                         try
                         {
+                            var client = new WebClient();
+
                             // create a temp working dir
                             Directory.CreateDirectory(@"c:\\ProgramData\AutoMD5\tmp\");
 
+                            statustext.Content = "Checking hash..";
+                            checkselectedbutton.IsEnabled = false;
+                            removeselectedbutton.IsEnabled = false;
+                            filelist.IsEnabled = false;
+
                             // download the file to a temp dir
-                            using (var client = new WebClient())
-                            {
-                                client.DownloadFile(url_final, @"c:\\ProgramData\AutoMD5\tmp\" + filename);
-                            }
-
-                            // check the md5
-                            using (var md5 = MD5.Create())
-                            {
-                                using (var stream = File.OpenRead(@"c:\\ProgramData\AutoMD5\tmp\" + filename))
-                                {
-                                    var hash = md5.ComputeHash(stream);
-                                    newmd5 = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                                }
-                            }
-
-                            string oldmd5 = "";
-                            file_md5value.Content = s1s[0].Replace("[m:", "");
-                            oldmd5 = file_md5value.Content.ToString().Replace("\n","");
-
-                            // compare md5s
-                            if (newmd5 != oldmd5)
-                            {
-                                isupdated = false;
-                                // file is outdated! move new file to files folder and update md5 value
-                                statustext.Content = "⚠️ Outdated MD5";
-                                instructortext.Text = "MD5 MISMATCH! \nOLD: " + oldmd5 + "\nNEW: " + newmd5 + "\n\n" + instructortext.Text;
-
-                                // delete the old file, then copy the file out of temp into files folder
-                                File.Delete(@"c:\\ProgramData\AutoMD5\files\" + filename);
-                                File.Copy(@"c:\\ProgramData\AutoMD5\tmp\" + filename, @"c:\\ProgramData\AutoMD5\files\" + filename);
-
-                                // update only md5 in file
-                                string data = File.ReadAllText(datafile).Replace(oldmd5, newmd5);
-                                File.WriteAllText(datafile, data);
-
-                                try
-                                {
-                                    // execute instructor
-                                    System.Diagnostics.Process.Start(s1s[1].Replace("i:", ""));
-                                }
-                                catch
-                                {
-                                    statustext.Content = "⚠️ Issue with instructor file.";
-                                }
-
-                                statustext.Content = "ℹ️ File updated just now.";
-                                isupdated = true;
-                            }
-                            else
-                            {
-                                statustext.Content = "✔️ File is up to date.";
-                                isupdated = true;
-                            }
-
-                            // delete temp
-                            File.Delete(@"c:\\ProgramData\AutoMD5\tmp\" + filename);
-                            getchecks();
+                            client.DownloadFileCompleted += client_DownloadFileCompleted;
+                            client.DownloadProgressChanged += client_DownloadProgressChanged;
+                            client.DownloadFileAsync(new Uri(url_final), @"c:\\ProgramData\AutoMD5\tmp\" + filename);
+                            
+                            client.Dispose();
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
-                            Console.WriteLine(e.Message);
+                            statustext.Content = e.Message;
                         }
 
                     }
@@ -297,6 +261,81 @@ namespace AutoMD5
                 instructortext.Text = e.Message;
             }
 
+        }
+
+        void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            statustext.Content = "Checking hash.. (" + e.ProgressPercentage + "%)";
+        }
+
+        void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            if (e.Error == null)
+            {
+                contop();
+            }
+            else
+            {
+                Console.WriteLine(e.Error);
+            }
+        }
+
+        // file completed download
+        void contop () {
+            Thread.Sleep(100);
+
+            // check the md5
+            var md5 = MD5.Create();
+            var stream = File.OpenRead(@"c:\\ProgramData\AutoMD5\tmp\" + filename);
+            var hash = md5.ComputeHash(stream);
+            string newmd5 = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+            stream.Close();
+
+            string oldmd5 = "";
+            file_md5value.Content = s1s[0].Replace("[m:", "");
+            oldmd5 = file_md5value.Content.ToString().Replace("\n", "");
+
+            // compare md5s
+            if (newmd5 != oldmd5)
+            {
+                isupdated = false;
+                // file is outdated! move new file to files folder and update md5 value
+                statustext.Content = "⚠️ Outdated MD5";
+                instructortext.Text = "MD5 MISMATCH! \nOLD: " + oldmd5 + "\nNEW: " + newmd5 + "\n\n" + instructortext.Text;
+
+                // delete the old file, then copy the file out of temp into files folder
+                File.Delete(@"c:\\ProgramData\AutoMD5\files\" + filename);
+                File.Copy(@"c:\\ProgramData\AutoMD5\tmp\" + filename, @"c:\\ProgramData\AutoMD5\files\" + filename);
+
+                // update only md5 in file
+                string data = File.ReadAllText(datafile).Replace(oldmd5, newmd5);
+                File.WriteAllText(datafile, data);
+
+                try
+                {
+                    // execute instructor
+                    System.Diagnostics.Process.Start(s1s[1].Replace("i:", ""));
+                }
+                catch
+                {
+                    statustext.Content = "⚠️ Issue with instructor file.";
+                }
+
+                statustext.Content = "ℹ️ File updated just now.";
+                isupdated = true;
+            }
+            else
+            {
+                statustext.Content = "✔️ File is up to date.";
+                isupdated = true;
+            }
+
+            // delete temp
+            File.Delete(@"c:\\ProgramData\AutoMD5\tmp\" + filename);
+            checkselectedbutton.IsEnabled = true;
+            removeselectedbutton.IsEnabled = true;
+            filelist.IsEnabled = true;
+            getchecks();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -322,8 +361,6 @@ namespace AutoMD5
 
         private void filelist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            checkselectedbutton.IsEnabled = true;
-            removeselectedbutton.IsEnabled = true;
 
             object o = null;
             try
@@ -334,9 +371,13 @@ namespace AutoMD5
                 if (o != null)
                 {
                     getdata(o.ToString());
-                }  
+                    Console.WriteLine(o.ToString());
+                }
             }
-            catch { }
+            catch
+            {
+                title.Content = "Error";
+            }
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -399,6 +440,16 @@ namespace AutoMD5
 
             // update the list view
             getchecks();
+        }
+
+        private void lightmode_emoji_Click(object sender, RoutedEventArgs e)
+        {
+            LightMode();
+        }
+
+        private void darkmode_button_Click(object sender, RoutedEventArgs e)
+        {
+            DarkMode();
         }
     }
 }
