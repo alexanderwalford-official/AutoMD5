@@ -17,7 +17,7 @@
         <CheckBox x:Name="autoexeccheck" Content="Auto execute instructor file." HorizontalAlignment="Left" Height="18" Margin="15,172,0,0" VerticalAlignment="Top" Width="191" IsChecked="True" IsEnabled="False"/>
         <Rectangle HorizontalAlignment="Left" Height="1" Margin="10,52,0,0" Stroke="#FF898989" VerticalAlignment="Top" Width="382"/>
         <Label x:Name="md5previewtext" Content="################################" HorizontalAlignment="Left" Height="25" Margin="85,244,0,0" VerticalAlignment="Top" Width="238" Background="{x:Null}" Foreground="#FF6E6E6E"/>
-        <Label x:Name="warntext" Content="WARNING: Only add instrctor files that you trust!" HorizontalAlignment="Left" Height="25" Margin="57,292,0,0" VerticalAlignment="Top" Width="290" Background="{x:Null}" Foreground="Red" FontWeight="Bold"/>
+        <Label x:Name="warntext" Content="WARNING: Only add instructor files that you trust!" HorizontalAlignment="Left" Height="25" Margin="53,292,0,0" VerticalAlignment="Top" Width="295" Background="{x:Null}" Foreground="Red" FontWeight="Bold"/>
         <Label x:Name="instrcutorfiletext" Content="*(.bat)" HorizontalAlignment="Left" Height="25" Margin="261,109,0,0" VerticalAlignment="Top" Width="131" Background="{x:Null}" Foreground="#FF6E6E6E"/>
         <Button x:Name="checkremote" Content="Check Compatibility" HorizontalAlignment="Left" Height="25" Margin="165,361,0,0" VerticalAlignment="Top" Width="120" Click="checkremote_Click"/>
 

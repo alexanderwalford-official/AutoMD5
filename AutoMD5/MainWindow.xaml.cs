@@ -250,7 +250,8 @@ namespace AutoMD5
                                 statustext.Content = "⚠️ Outdated MD5";
                                 instructortext.Text = "MD5 MISMATCH! \nOLD: " + oldmd5 + "\nNEW: " + newmd5 + "\n\n" + instructortext.Text;
 
-                                // copy the file out of temp into files folder
+                                // delete the old file, then copy the file out of temp into files folder
+                                File.Delete(@"c:\\ProgramData\AutoMD5\files\" + filename);
                                 File.Copy(@"c:\\ProgramData\AutoMD5\tmp\" + filename, @"c:\\ProgramData\AutoMD5\files\" + filename);
 
                                 // update only md5 in file
