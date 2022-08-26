@@ -138,8 +138,8 @@ namespace AutoMD5
                 md5previewtext.Content = "ERROR: INVALID FILE URL PROVIDED.";
                 addbutton.IsEnabled = false;
                 Console.WriteLine(e.Message);
-            }
-            checkremote.IsEnabled = true;
+                checkremote.IsEnabled = true;
+            }   
         }
 
         void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -175,6 +175,7 @@ namespace AutoMD5
             }
 
             // enable the add button
+            checkremote.IsEnabled = true;
             addbutton.IsEnabled = true;
         }
 
@@ -186,6 +187,7 @@ namespace AutoMD5
 
         private void checkremote_Click(object sender, RoutedEventArgs e)
         {
+            checkremote.IsEnabled = false;
             checkcompat();
         }
     }
