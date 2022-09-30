@@ -27,6 +27,7 @@ namespace AutoMD5
         bool isupdated = false;
         List<string> files = new List<string>();
         public bool passback = false;
+        int selected;
 
         public MainWindow()
         {
@@ -41,6 +42,10 @@ namespace AutoMD5
             title.Foreground = System.Windows.Media.Brushes.White;
             file_md5value.Foreground = System.Windows.Media.Brushes.White;
             statustext.Foreground = System.Windows.Media.Brushes.White;
+            filelist.Background = System.Windows.Media.Brushes.DarkGray;
+            filelist.Foreground = System.Windows.Media.Brushes.White;
+            instructortext.Background = System.Windows.Media.Brushes.DarkGray;
+            instructortext.Foreground = System.Windows.Media.Brushes.White;
         }
         void LightMode()
         {
@@ -49,10 +54,15 @@ namespace AutoMD5
             title.Foreground = System.Windows.Media.Brushes.Black;
             file_md5value.Foreground = System.Windows.Media.Brushes.Black;
             statustext.Foreground = System.Windows.Media.Brushes.Black;
+            filelist.Background = System.Windows.Media.Brushes.White;
+            filelist.Foreground = System.Windows.Media.Brushes.Black;
+            instructortext.Background = System.Windows.Media.Brushes.White;
+            instructortext.Foreground = System.Windows.Media.Brushes.Black;
         }
 
         public void getchecks()
         {
+            filelist.SelectedItem = selected;
             // reset if passback, only an attempt for fixing this bug
             if (passback)
             {
@@ -149,6 +159,7 @@ namespace AutoMD5
                             files.Add(s1s[2].Replace("f:", ""));
                             i++; 
                         }
+                        filelist.SelectedItem = selected;
                     }
                 }
                 else
@@ -166,7 +177,6 @@ namespace AutoMD5
             catch
             {
             }
-
         }
         bool isdoingsomething;
         void getdata(string input)
@@ -359,6 +369,7 @@ namespace AutoMD5
             filelist.IsEnabled = true;
             isdoingsomething = false;
             checkupdates.IsEnabled = true;
+            filelist.SelectedItem = selected;
             getchecks();
         }
 
@@ -377,6 +388,7 @@ namespace AutoMD5
             getchecks();
             for(int i = 0; i < 49; i+=1)
             {
+                selected = i;
                 getdata(i.ToString());             
             }         
         }
@@ -390,6 +402,7 @@ namespace AutoMD5
 
         private void filelist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            selected = filelist.SelectedIndex;
             object o = null;
             try
             {
@@ -399,7 +412,6 @@ namespace AutoMD5
                 if (o != null)
                 {
                     getdata(o.ToString());
-                    Console.WriteLine(o);
                 }
             }
             catch
@@ -409,19 +421,20 @@ namespace AutoMD5
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // check selected
             object o = null;
             try
             {
                 // menu item clicked
-                o = filelist.SelectedIndex;
+                o = filelist.SelectedIndex; // starts at 0
 
                 if (o != null)
                 {
                     getdata(o.ToString());
                 }
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
